@@ -8,6 +8,7 @@
 #include <string.h>
 #include <linux/sched.h>
 #include <linux/kernel.h>
+#include <sys/wait.h>
 
 using namespace std;
 
@@ -121,31 +122,15 @@ int main(void)
 				continue;
 			}
 			
-			//透過uid來分辨誰是我的process
-			uid_t my_uid = getuid();
+			string arg1 = "ps";
+			string arg2 = "-f";
 
-			DIR* dp;
-			dp = opendir("/proc");
-			struct dirent* dirp = readdir(dp);
-
-			while (dirp != NULL) {
-				if (!isNumber(dirp->d_name)) { 
-					dirp = readdir(dp);
-					continue;
-				}
-
-				uid_t this_uid = -1;
-
-				if (!sameUid(dirp, my_uid, this_uid)) {
-					dirp = readdir(dp);
-					continue;
-				}
-				
-				string CMD = getCMD(dirp);
-				cout << CMD << endl;
-				
-				dirp = readdir(dp);
-			}
+			char* arg[3] = { strdup(arg1.c_str()), strdup(arg2.c_str()), NULL };
+			pid_t pid = fork();
+			if (pid == 0) 
+				execvp(arg[0], arg);
+			else if (pid > 0)
+				wait(NULL);
 
 		}
 	}
