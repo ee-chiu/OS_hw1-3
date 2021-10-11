@@ -70,48 +70,44 @@ int main(void)
 			break;
 
 		else if (arg == "cat") {
-			string file_name;
-			cin >> file_name;
-			FILE* file = fopen(file_name.c_str(), "r");
+			string arg1 = "cat";
+			string arg2;
+			cin >> arg2;
 
-			if (file == NULL) {
-				cout << "Cannot open this file" << endl;
-				continue;
-			}
-
-			char c;
-			while (!feof(file)) {
-				c = getc(file);
-				cout << c;
-			}
-
-			cout << endl;
+			char* arg[3] = { strdup(arg1.c_str()), strdup(arg2.c_str()), NULL };
+			pid_t pid = fork();
+			if (pid == 0)
+				execvp(arg[0], arg);
+			else if (pid > 0)
+				wait(NULL);
+			
 			continue;
 		}
 
 		else if (arg == "ls") {
-			DIR* dp;
-			dp = opendir("./");
-			struct dirent* dirp = readdir(dp);
+			string arg1 = "ls";
 
-			while (dirp != NULL) {
-				if (!strcmp(dirp->d_name, ".") || !strcmp(dirp->d_name, "..")) {
-					dirp = readdir(dp);
-					continue;
-				}
-
-				cout << dirp->d_name << " ";
-				dirp = readdir(dp);
-			}
-			cout << endl;
+			char* arg[3] = { strdup(arg1.c_str()), NULL };
+			pid_t pid = fork();
+			if (pid == 0)
+				execvp(arg[0], arg);
+			else if (pid > 0)
+				wait(NULL);
 
 			continue;
 		}
 
 		else if (arg == "date") {
-			time_t now = time(0);
-			char* dt = ctime(&now);
-			cout << dt;
+			string arg1 = "date";
+
+			char* arg[3] = { strdup(arg1.c_str()), NULL };
+			pid_t pid = fork();
+			if (pid == 0)
+				execvp(arg[0], arg);
+			else if (pid > 0)
+				wait(NULL);
+
+			continue;
 		}
 
 		else if (arg == "ps") {
@@ -132,6 +128,7 @@ int main(void)
 			else if (pid > 0)
 				wait(NULL);
 
+			continue;
 		}
 	}
 
